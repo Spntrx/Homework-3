@@ -20,7 +20,7 @@ const symbolsNoSimilar = '?#$%&*+-='
 const NUMBER_OF_PASSWORDS_TO_GENERATE = 3
 var ammountChar = document.getElementById("charAmmount").value;
 
-var PASSWORD_LENGTH = parseInt(ammountChar)
+const PASSWORD_LENGTH = parseInt(ammountChar)
 
 let charPool = numbers + upperCases + lowerCases + symbols
 
