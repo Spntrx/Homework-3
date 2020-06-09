@@ -1,84 +1,136 @@
-<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<script src="https://unpkg.com/clipboard@1.5.15/dist/clipboard.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+		<script type="text/javascript">
+			var charTypes = {
+				'upper': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+				'lower': 'abcdefghijklmnopqrstuvwxyz',
+				'number': '0123456789',
+				'special': '!$%^&*()-=+[]{};#:@~,./<>?'
+			};
 
-<head>
-  <meta charset="UTF-8">
-  <title>Password Generator</title>
-  <link rel='shortcut icon' type='image/x-icon' href='assets/favicon.ico' />
-  <link rel="stylesheet" type="text/css" href="css/style.css">
-</head>
+			window.onload = function() { 
+				var inputs = document.querySelectorAll('form div input[type=text]');
+				for (var i = 0; i < inputs.length; i++) {
+					var input = inputs[i];
+					var div = input.parentNode;
+					//set initial value
+					var type = div.id;
+					input.value = charTypes[type];
+					input.size = 40;
 
-<body>
-  <div id="page" class="flex-container wrap">
+					var anchor = div.querySelector('a');
+					anchor.onclick = function (input, type) {
+						return function () {
+							input.value = charTypes[type];
+							return false;
+						};
+					}(input, type);
+				}
+			}
 
-    <div class="flex-side">
-      <div class="center-content">
-        <h1>Password Generator</h1>
-      </div>
+			function _generatePassword(passwordLength, charBlocks) {
+				var allChars = "";
+				for (var i = 0; i < charBlocks.length; i++) {
+					allChars += charBlocks[i];
+				}
+				var numChars = allChars.length;
+				var password = "";
+				for (var i = 1; i <= passwordLength; i++) {
+					password += allChars.charAt(Math.floor(Math.random() * numChars));
+				}
+				return password;
+			}
 
-      <div class="center-content form">
-        <label class="container">Numbers
-          <input type="checkbox" id="numbers" checked="checked">
-          <span class="checkmark"></span>
-        </label>
-        <label class="tip">Contains numbers : 1 2 ... 9 0</label>
-
-        <label class="container">Uppercase letters
-          <input type="checkbox" id="uppercases" checked="checked">
-          <span class="checkmark"></span>
-        </label>
-        <label class="tip">Contains uppercase letters : A B ... Y Z</label>
-
-        <label class="container">Lowercase letters
-          <input type="checkbox" id="lowercases" checked="checked">
-          <span class="checkmark"></span>
-        </label>
-        <label class="tip">Contains lowercase letters : a b ... y z</label>
-
-        <label class="container">Symbols
-          <input type="checkbox" id="symbols" checked="checked">
-          <span class="checkmark"></span>
-        </label>
-        <label class="tip">Contains symbols : ! ? # $ % & * + - =</label>
-
-        <label class="container">Remove similar characters
-          <input type="checkbox" id="similars">
-          <span class="checkmark"></span>
-        </label>
-        <label class="tip">No ambiguous characters : 1 l I ! 0 O Q 8 B</label>
-
-        <label class="container">How many character in your password?
-        </label>
-        <input class="form-control" type="text" placeholder="Between 8 to 128" id="charAmmount">
-       
-
-        <div>
-          <button id="submit-btn" class="btn submit-btn">Generate</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex-side result">
-      <div class="center-results">
-        <div class="flex-container password-result">
-          <input type="text" id="password-1" name="password-1" spellcheck="false">
-          <button class="btn copy-btn no-wrap" onclick="copyPassword('password-1')">Copy</button>
-        </div>
-
-        <div class="flex-container password-result">
-          <input type="text" id="password-2" name="password-2" spellcheck="false">
-          <button class="btn copy-btn no-wrap" onclick="copyPassword('password-2')">Copy</button>
-        </div>
-
-        <div class="flex-container password-result">
-          <input type="text" id="password-3" name="password-3" spellcheck="false">
-          <button class="btn copy-btn no-wrap" onclick="copyPassword('password-3')">Copy</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <script src="js/password-generator.js"></script>
-</body>
-
+			function generatePassword(passwordLength) {
+				var charBlocks = [];
+				for (id in charTypes) {
+					var isTicked = document.querySelector('div#' + id + ' input[type=checkbox]').checked;
+					var value = document.querySelector('div#' + id + ' input[type=text]').value;
+					if (isTicked) {
+						charBlocks.push(value);
+					}
+				}
+				
+				var $length = document.getElementById('length');
+				var passwordLength = parseInt($length.value)
+				
+				var password = _generatePassword(passwordLength, charBlocks);
+				var $display = document.getElementById('display-password');
+				$display.textContent  = password;
+			}
+		</script>
+		<style type="text/css">
+			p#display-password {
+				font-family: monospace;
+			}
+			p.disclaimer{
+				font-family: sans-serif;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="outer" title=" ">
+      <h1>Password Generator!</h1>
+			<form>
+				<div id="upper">
+					<input type="checkbox" checked><input type="text">
+					<span>  <a href="#">reset</a></span>
+				</div>
+				<div id="lower">
+					<input type="checkbox" checked><input type="text">
+					<span>  <a href="#">reset</a></span>
+				</div>
+				<div id="number">
+					<input type="checkbox" checked><input type="text">
+					<span>  <a href="#">reset</a></span>
+				</div>
+				<div id="special">
+					<input type="checkbox" checked><input type="text">
+					<span>  <a href="#">reset</a></span>
+				</div>
+				<br />
+				Length: <input id="length" type="text" placeholder="Between 8-128"><br />
+				<input type="submit" value="Generate" onclick="generatePassword(); return false;">
+			</form>
+			<p id="display-password"></p>
+			<button class="copy-button" data-clipboard-target="#display-password">
+				<i class="fa fa-clipboard" aria-hidden="true"></i>
+			</button>
+			<hr />
+			</div>
+		<script type="text/javascript">
+			var buttonSelector = '.copy-button';
+			var elem = $('div.outer');
+			elem.tooltip({
+				disabled: true, 
+				position: {
+					of: buttonSelector
+				}
+			});
+				
+			function showTooltip(message) {
+				elem.tooltip("option", "content", message);
+				elem.tooltip("enable");
+				elem.tooltip("open");
+				setTimeout(function() {
+					elem.tooltip("close");
+					elem.tooltip("disable");
+				}, 2000)
+			}
+			
+			var clipboard = new Clipboard(buttonSelector);
+			clipboard.on('success', function(e) {
+				showTooltip("Copied.");
+				e.clearSelection();
+			});
+			clipboard.on('error', function(e) {
+				showTooltip("Press Ctrl+C to copy");
+			});
+		</script>
+	</body>
 </html>
